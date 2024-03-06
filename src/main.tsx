@@ -1,6 +1,8 @@
 import ReactDOM from "react-dom";
 import App from "./App";
-
+import { MessagesContextProvider } from "./context/messages-context";
+import { AssistantContextProvider } from "./context/assistant-context";
+import './index.css'
 export interface IAppProps {
   apiKey: string;
 }
@@ -26,11 +28,14 @@ window.Chatbot = {
       );
       return;
     }
-    ReactDOM.render(<App {...props} />, el);
+    ReactDOM.render(
+      <MessagesContextProvider>
+        <AssistantContextProvider>
+          <App {...props} />
+        </AssistantContextProvider>
+      </MessagesContextProvider>,
+      el
+    );
   },
 };
-
-
-
-
 
