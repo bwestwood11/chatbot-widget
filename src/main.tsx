@@ -4,7 +4,9 @@ import { MessagesContextProvider } from "./context/messages-context";
 import { AssistantContextProvider } from "./context/assistant-context";
 import './index.css'
 export interface IAppProps {
-  apiKey: string;
+  api_key: string;
+  text_color?:string;
+  theme_color?:string;
 }
 
 declare global {
@@ -17,7 +19,7 @@ declare global {
 
 window.Chatbot = {
   mount: function (el: Element, props: IAppProps) {
-    if (!props.apiKey) {
+    if (!props.api_key) {
       console.error("ERROR: apiKey is required for The Chatbot.");
       ReactDOM.render(
         <div style={{ color: "red" }}>
@@ -39,3 +41,4 @@ window.Chatbot = {
   },
 };
 
+window.Chatbot.mount(document.getElementById('root')!,{api_key:"a5bc409c-6b11-4c1a-8f19-2df17db555a8", text_color:"white", theme_color:"red"});

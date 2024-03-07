@@ -14,8 +14,16 @@ import { GoDotFill } from "react-icons/go";
 // import useOnClickOutside from "@/hooks/useOnClickOutside";
 import { IAppProps } from "./main";
 
+// const BASEPATH = "https://chatty-liart.vercel.app/api";
+const BASEPATH = "http://localhost:3000/api";
 
-const BASEPATH = 'https://Chatty.com/api'
+type TCHATBOXDETAILS = {
+  chatBotName: string;
+  colorScheme: string;
+  welcomeMessage: string;
+  apiKey: string;
+  logoUrl: string;
+};
 
 const Widget = (props: IAppProps) => {
   const [chatBox, setChatBox] = useState(false);
@@ -26,6 +34,15 @@ const Widget = (props: IAppProps) => {
   const [threadLoading, setThreadLoading] = useState(false);
   const [generationLoading, setGenerationLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
+  const [chatbotDetails, setChatbotDetails] = useState<null | TCHATBOXDETAILS>(
+    null
+  );
+
+  
+  const BackgroundStyles = { backgroundColor: props.theme_color || chatbotDetails?.colorScheme };
+  const TextStyles = { color: props.text_color };
+  
+
 
   // const scrollTriggerRef = useRef<>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for the element to scroll to
@@ -34,6 +51,24 @@ const Widget = (props: IAppProps) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const fetchBot = async function () {
+      console.log(props);
+      const response = await fetch(BASEPATH + `/chatbot/${props.api_key}`);
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      if (!data.data) {
+        return;
+      }
+      console.log(data.data);
+      setChatbotDetails(data.data);
+    };
+
+    fetchBot();
+  }, []);
 
   // useOnClickOutside(widgetContainerRef, () => {
   //   setChatBox(false);
@@ -52,16 +87,10 @@ const Widget = (props: IAppProps) => {
         return;
       }
       setThreadLoading(true);
-
-      const response = await fetch(BASEPATH + "/run-assistant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-
+      const response = await fetch(BASEPATH + "/run-assistant");
+      console.log("response", response);
       const data = await response.json();
+      console.log("data", data);
       if (!response.ok) {
         throw Error("Error While Creating the chat");
       }
@@ -76,7 +105,8 @@ const Widget = (props: IAppProps) => {
         ...prev,
         { from: "chatbot", message: data.welcomeMessage },
       ]);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setError(
         "There Was an Error While Loading the ChatBot Refresh The Browser"
       );
@@ -91,20 +121,17 @@ const Widget = (props: IAppProps) => {
     setGenerationLoading(true);
 
     setMessages((prev) => [...prev, { from: "user", message: userMessage }]);
+
     const response = await fetch(BASEPATH + "/answer-user", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message: userMessage, threadId: threadId }),
+      body: JSON.stringify({ threadId, message: userMessage }),
     });
-    console.log(response);
     const data = await response.json();
-    console.dir(data, {
-      depth: null,
-    });
     setGenerationLoading(false);
-    setMessages((prev) => [...prev, { from: "chatbot", message: data }]);
+    setMessages((prev) => [
+      ...prev,
+      { from: "chatbot", message: data },
+    ]);
   };
 
   const handleChatBox = () => {
@@ -121,7 +148,8 @@ const Widget = (props: IAppProps) => {
       {/* The widget at the bottom right which starts a new thread onClick */}
       <Button
         onClick={() => createThread()}
-        className="bg-orange-500 p-7 justify-center flex items-center rounded-full hover:bg-orange-500/70"
+        style={BackgroundStyles}
+        className="p-7 justify-center flex items-center rounded-full hover:bg-orange-500/70"
       >
         {chatBox ? (
           <IoClose className="w-8 h-8 text-white cursor-pointer" />
@@ -132,13 +160,28 @@ const Widget = (props: IAppProps) => {
 
       {/* Parent div of the chat box */}
       {chatBox && (
-        <div ref={widgetContainerRef} className="bg-white absolute mb-4 break-words flex flex-col bottom-full justify-between shadow-lg right-0 rounded-2xl w-96 h-[60dvh]">
+        <div
+          ref={widgetContainerRef}
+          className="bg-white absolute mb-4 break-words flex flex-col bottom-full justify-between shadow-lg right-0 rounded-2xl w-96 h-[60dvh]"
+        >
           {/* Start of orange header for chatbox */}
-          <div className="justify-between p-3 flex items-center bg-orange-500 rounded-t-2xl rounded-b-none text-white">
-            <div className="flex items-center">
-              <LuDot className="text-green-500 animate-pulse" size={40} />
+          <div
+            style={{...BackgroundStyles, ...TextStyles }}
+            className="justify-between p-3 flex items-center rounded-t-2xl rounded-b-none "
+          >
+            <div className="flex gap-3 items-center">
+              <img
+                src={
+                  chatbotDetails?.logoUrl || "https://via.placeholder.com/50"
+                }
+                alt="logo"
+                width={40}
+                height={40}
+                loading="lazy"
+                className="w-10 h-10 rounded-full object-contain"
+              />
               <h2 className="text-lg font-bold text-center">
-                Chatty Assistant
+                {chatbotDetails?.chatBotName || "Chatty Assistant"}
               </h2>
             </div>
             <div className="flex space-x-3">
@@ -159,38 +202,38 @@ const Widget = (props: IAppProps) => {
             </div>
           ) : null}
           {/* Parent element for the chat area below orange header */}
-          <ScrollArea className="h-full w-full mt-6 space-y-2 py-2 text-sm">
-            {
-              messages.map((message, index) => (
+          <ScrollArea className="h-full w-full mt-6 space-y-2 py-2 text-sm" style={{...TextStyles}}>
+            {messages.map((message, index) => (
+              <div
+                key={`LoadingPointsWidget-${index}`}
+                className={cn(
+                  "flex flex-1 px-4",
+                  message?.from === "user"
+                    ? "justify-end w-full"
+                    : "justify-start w-full"
+                )}
+              >
                 <div
-                  key={`LoadingPointsWidget-${index}`}
                   className={cn(
-                    "flex flex-1 px-4",
+                    "flex gap-y-1",
                     message?.from === "user"
-                      ? "justify-end w-full"
-                      : "justify-start w-full"
+                      ? "justify-end p-1.5 rounded-3xl w-3/4"
+                      : "justify-start w-3/4"
                   )}
                 >
-                  <div
+                  <span
+                    style={BackgroundStyles}
                     className={cn(
-                      "flex gap-y-1",
                       message?.from === "user"
-                        ? "justify-end p-1.5 rounded-3xl w-3/4"
-                        : "justify-start w-3/4"
+                        ? "w-fit px-3 py-2 rounded-lg text-white text-end mb-2"
+                        : "w-fit bg-slate-100 px-3 py-2 text-start rounded-lg mb-2"
                     )}
                   >
-                    <span
-                      className={cn(
-                        message?.from === "user"
-                          ? "w-fit bg-orange-500 px-3 py-2 rounded-lg text-white text-end mb-2"
-                          : "w-fit bg-slate-100 px-3 py-2 text-start rounded-lg mb-2"
-                      )}
-                    >
-                      {message?.message}
-                    </span>
-                  </div>
+                    {message?.message}
+                  </span>
                 </div>
-              ))}
+              </div>
+            ))}
             {/* The loader for when the Assistant API is thinking of an answer */}
             {generationLoading && (
               <div className="px-4">
@@ -213,16 +256,15 @@ const Widget = (props: IAppProps) => {
               onSubmit={(e) => handleUserMessage(e)}
               className="flex flex-row bg-white p-4"
             >
-         
               <input
-        type={"text"}
-        placeholder="Message..."
-        aria-label="Type here"
-        value={userMessage}
+                type={"text"}
+                placeholder="Message..."
+                aria-label="Type here"
+                value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
-        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
-        {...props}
-      />
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
+                {...props}
+              />
               <Button type="submit" className="border-s-0" disabled={!threadId}>
                 <LuArrowUpRight size={25} />
               </Button>
@@ -239,12 +281,11 @@ export default Widget;
 const WidgetLoader = () => {
   return (
     <div className=" w-full flex flex-col gap-2 mt-6 px-4 py-2">
-       <div
-      className={"animate-pulse rounded-md bg-primary/10 w-3/4 h-[24px] self-start"}
-  
-    />
-    
+      <div
+        className={
+          "animate-pulse rounded-md bg-primary/10 w-3/4 h-[24px] self-start"
+        }
+      />
     </div>
   );
 };
-
