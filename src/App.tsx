@@ -2,7 +2,6 @@ import { FaRocketchat } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { FaMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
-import { LuDot } from "react-icons/lu";
 import { useEffect, useRef, useState } from "react";
 import { LuArrowUpRight } from "react-icons/lu";
 import { useThread } from "@/hooks/use-thread";
