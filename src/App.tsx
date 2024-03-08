@@ -90,9 +90,6 @@ const Widget = (props: IAppProps) => {
     fetchBot();
   }, []);
 
-  if (error) {
-    return <></>;
-  }
 
   // useOnClickOutside(widgetContainerRef, () => {
   //   setChatBox(false);
