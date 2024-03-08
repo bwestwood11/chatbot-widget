@@ -29,7 +29,6 @@ const Widget = (props: IAppProps) => {
   const [chatBox, setChatBox] = useState(false);
   const { messages, setMessages } = useMessages();
   const [userMessage, setUserMessage] = useState("");
-  const [showChat, setShowChat] = useState(false);
   const { threadId, setThreadId } = useThread();
   const [threadLoading, setThreadLoading] = useState(false);
   const [generationLoading, setGenerationLoading] = useState(false);
@@ -107,7 +106,7 @@ const Widget = (props: IAppProps) => {
       setChatBox(!chatBox);
       if (threadId) {
         setThreadId(threadId);
-        setShowChat(true);
+      
         setThreadLoading(false);
         return;
       }
@@ -127,7 +126,7 @@ const Widget = (props: IAppProps) => {
       }
       const thread: string = data.thread;
       setThreadId(thread);
-      setShowChat(true);
+     
       setMessages((prev) => [
         ...prev,
         {
@@ -348,7 +347,7 @@ const Widget = (props: IAppProps) => {
                 aria-label="Type here"
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
-                className=" h-9 rounded-md border border-input bg-transparent py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
+                className=" h-9 rounded-md border border-input bg-transparent py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
                 {...props}
               />
               <Button type="submit" className="border-s-0" disabled={!threadId}>
