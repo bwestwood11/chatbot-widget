@@ -41,4 +41,5 @@ window.Chatbot = {
   },
 };
 
-window.Chatbot.mount(document.getElementById('root')!,{api_key:"a5bc409c-6b11-4c1a-8f19-2df17db555a8", text_color:"white", theme_color:"red"});
+
+window.Chatbot.mount(document.getElementById('root')!,{api_key:"abff3842-d402-4a40-8787-71079b9649ac",   });

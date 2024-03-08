@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { FaMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import { useEffect, useRef, useState } from "react";
-import { LuArrowUpRight } from "react-icons/lu";
+import { LuArrowUpRight, LuDot } from "react-icons/lu";
 import { useThread } from "@/hooks/use-thread";
 import { useMessages } from "@/hooks/use-messages";
-import { cn } from "@/lib/utils";
+import { cn, getContrast } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoDotFill } from "react-icons/go";
 // import { FormError } from "../auth/form-error";
@@ -22,6 +22,7 @@ type TCHATBOXDETAILS = {
   welcomeMessage: string;
   apiKey: string;
   logoUrl: string;
+  textColor: string;
 };
 
 const Widget = (props: IAppProps) => {
@@ -36,12 +37,12 @@ const Widget = (props: IAppProps) => {
   const [chatbotDetails, setChatbotDetails] = useState<null | TCHATBOXDETAILS>(
     null
   );
+  const [isUserNameExist, setIsUserNameExist] = useState<string>("");
+  const [userNameInput, setNameInput] = useState("");
 
-  
-  const BackgroundStyles = { backgroundColor: props.theme_color || chatbotDetails?.colorScheme };
-  const TextStyles = { color: props.text_color };
-  
-
+  const BackgroundStyles = {
+    backgroundColor: props.theme_color || chatbotDetails?.colorScheme,
+  };
 
   // const scrollTriggerRef = useRef<>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for the element to scroll to
@@ -49,6 +50,20 @@ const Widget = (props: IAppProps) => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleUserName = async (e: any) => {
+    e.preventDefault();
+
+    setIsUserNameExist(userNameInput);
+    await fetch(BASEPATH + "/set-user-details", {
+      method: "POST",
+      body: JSON.stringify({
+        threadId,
+        userName: userNameInput,
+        apiKey: props.api_key,
+      }),
+    });
   };
 
   useEffect(() => {
@@ -63,11 +78,22 @@ const Widget = (props: IAppProps) => {
         return;
       }
       console.log(data.data);
-      setChatbotDetails(data.data);
+      if (!data.data) {
+        return;
+      }
+      const Details = data.data;
+      console.log(Details);
+      const textColor = getContrast(props.theme_color || Details.colorScheme);
+      console.log({ textColor, details: Details.colorScheme });
+      setChatbotDetails({ ...Details, textColor });
     };
 
     fetchBot();
   }, []);
+
+  if (error) {
+    return <></>;
+  }
 
   // useOnClickOutside(widgetContainerRef, () => {
   //   setChatBox(false);
@@ -86,7 +112,9 @@ const Widget = (props: IAppProps) => {
         return;
       }
       setThreadLoading(true);
-      const response = await fetch(BASEPATH + "/run-assistant");
+      const response = await fetch(
+        BASEPATH + `/create-thread/${props.api_key}`
+      );
       console.log("response", response);
       const data = await response.json();
       console.log("data", data);
@@ -94,15 +122,19 @@ const Widget = (props: IAppProps) => {
         throw Error("Error While Creating the chat");
       }
 
-      if (!data.thread || !data.welcomeMessage) {
-        throw Error("Error While Creating the chat in welcome");
+      if (!data.thread) {
+        throw Error("Error While Creating the chat");
       }
       const thread: string = data.thread;
       setThreadId(thread);
       setShowChat(true);
       setMessages((prev) => [
         ...prev,
-        { from: "chatbot", message: data.welcomeMessage },
+        {
+          from: "chatbot",
+          message:
+            chatbotDetails?.welcomeMessage || "Hello! How can I help you?",
+        },
       ]);
     } catch (e) {
       console.error(e);
@@ -115,22 +147,35 @@ const Widget = (props: IAppProps) => {
   };
 
   const handleUserMessage = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setUserMessage("");
-    setGenerationLoading(true);
+    try {
+      e.preventDefault();
+      setUserMessage("");
 
-    setMessages((prev) => [...prev, { from: "user", message: userMessage }]);
+      setGenerationLoading(true);
 
-    const response = await fetch(BASEPATH + "/answer-user", {
-      method: "POST",
-      body: JSON.stringify({ threadId, message: userMessage }),
-    });
-    const data = await response.json();
-    setGenerationLoading(false);
-    setMessages((prev) => [
-      ...prev,
-      { from: "chatbot", message: data },
-    ]);
+      setMessages((prev) => [...prev, { from: "user", message: userMessage }]);
+
+      const response = await fetch(BASEPATH + "/answer-user", {
+        method: "POST",
+        body: JSON.stringify({
+          threadId,
+          message: userMessage,
+          apiKey: props.api_key,
+        }),
+      });
+      const data = await response.json();
+      setMessages((prev) => [...prev, { from: "chatbot", message: data }]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "chatbot",
+          message: "There Was an Issue While Generating Message",
+        },
+      ]);
+    } finally {
+      setGenerationLoading(false);
+    }
   };
 
   const handleChatBox = () => {
@@ -165,20 +210,11 @@ const Widget = (props: IAppProps) => {
         >
           {/* Start of orange header for chatbox */}
           <div
-            style={{...BackgroundStyles, ...TextStyles }}
+            style={{ ...BackgroundStyles, color: chatbotDetails?.textColor }}
             className="justify-between p-3 flex items-center rounded-t-2xl rounded-b-none "
           >
             <div className="flex gap-3 items-center">
-              <img
-                src={
-                  chatbotDetails?.logoUrl || "https://via.placeholder.com/50"
-                }
-                alt="logo"
-                width={40}
-                height={40}
-                loading="lazy"
-                className="w-10 h-10 rounded-full object-contain"
-              />
+              <LuDot className="text-green-500" size={40} />
               <h2 className="text-lg font-bold text-center">
                 {chatbotDetails?.chatBotName || "Chatty Assistant"}
               </h2>
@@ -201,38 +237,63 @@ const Widget = (props: IAppProps) => {
             </div>
           ) : null}
           {/* Parent element for the chat area below orange header */}
-          <ScrollArea className="h-full w-full mt-6 space-y-2 py-2 text-sm" style={{...TextStyles}}>
-            {messages.map((message, index) => (
-              <div
-                key={`LoadingPointsWidget-${index}`}
-                className={cn(
-                  "flex flex-1 px-4",
-                  message?.from === "user"
-                    ? "justify-end w-full"
-                    : "justify-start w-full"
-                )}
-              >
+          <ScrollArea
+            className="h-full w-full space-y-2 text-sm"
+            style={{ color: chatbotDetails?.textColor }}
+          >
+            {/* Logo and Name of Business */}
+            <div className="flex flex-col w-full items-center mb-6">
+              <img
+                src={
+                  chatbotDetails?.logoUrl || "https://via.placeholder.com/50"
+                }
+                alt="logo"
+                width={80}
+                height={80}
+                loading="lazy"
+                className="w-20 h-20 rounded-full object-contain mt-3"
+              />
+              <h2 className="text-lg font-bold text-center text-black">
+                {chatbotDetails?.chatBotName}
+              </h2>
+              <p className="text-muted-foreground px-10 text-center">
+                We are here to help you with any questions in regards to our
+                company and our services. {chatbotDetails?.textColor}
+              </p>
+            </div>
+
+            {isUserNameExist &&
+              messages.map((message, index) => (
                 <div
+                  key={`LoadingPointsWidget-${index}`}
                   className={cn(
-                    "flex gap-y-1",
+                    "flex flex-1 px-4",
                     message?.from === "user"
-                      ? "justify-end p-1.5 rounded-3xl w-3/4"
-                      : "justify-start w-3/4"
+                      ? "justify-end w-full"
+                      : "justify-start w-full"
                   )}
                 >
-                  <span
-                    style={BackgroundStyles}
+                  <div
                     className={cn(
+                      "flex gap-y-1",
                       message?.from === "user"
-                        ? "w-fit px-3 py-2 rounded-lg text-white text-end mb-2"
-                        : "w-fit bg-slate-100 px-3 py-2 text-start rounded-lg mb-2"
+                        ? "justify-end p-1.5 rounded-3xl w-3/4"
+                        : "justify-start w-3/4"
                     )}
                   >
-                    {message?.message}
-                  </span>
+                    <span
+                      style={message?.from === "user" ? BackgroundStyles : {}}
+                      className={cn(
+                        message?.from === "user"
+                          ? "w-fit px-3 py-2 rounded-lg shadow-md text-end mb-2"
+                          : "w-fit px-3 bg-slate-50 shadow-md py-2 text-start text-black rounded-lg mb-2"
+                      )}
+                    >
+                      {message?.message}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {/* The loader for when the Assistant API is thinking of an answer */}
             {generationLoading && (
               <div className="px-4">
@@ -247,13 +308,39 @@ const Widget = (props: IAppProps) => {
               </div>
             )}
             {/* This div is for scrolling to the bottom of the chat box when new messages appear */}
+            {!isUserNameExist && (
+              <form
+                onSubmit={(e) => handleUserName(e)}
+                className="flex flex-row bg-white p-4 items-center w-full"
+              >
+                <label className="sr-only">Enter Your Name</label>
+                <input
+                  type={"text"}
+                  placeholder="Enter Your Name To Continue"
+                  aria-label="Type here"
+                  className=" h-9 rounded-md border border-input bg-transparent text-black py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
+                  onChange={(e) => setNameInput(e.target.value)}
+                  value={userNameInput}
+                  {...props}
+                />
+                <Button
+                  type="submit"
+                  className="border-s-0"
+                  disabled={!threadId}
+                >
+                  <LuArrowUpRight size={20} />
+                </Button>
+              </form>
+            )}
+
             <div ref={messagesEndRef} />
           </ScrollArea>
+
           {/* The input that allows the user to chat to the assistant's API */}
-          {showChat && !threadLoading && (
+          {!threadLoading && Boolean(isUserNameExist) && (
             <form
               onSubmit={(e) => handleUserMessage(e)}
-              className="flex flex-row bg-white p-4"
+              className="flex flex-row bg-white p-4 items-center"
             >
               <input
                 type={"text"}
@@ -261,11 +348,11 @@ const Widget = (props: IAppProps) => {
                 aria-label="Type here"
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
+                className=" h-9 rounded-md border border-input bg-transparent py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
                 {...props}
               />
               <Button type="submit" className="border-s-0" disabled={!threadId}>
-                <LuArrowUpRight size={25} />
+                <LuArrowUpRight size={20} />
               </Button>
             </form>
           )}
