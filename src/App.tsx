@@ -9,8 +9,7 @@ import { useMessages } from "@/hooks/use-messages";
 import { cn, getContrast } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GoDotFill } from "react-icons/go";
-// import { FormError } from "../auth/form-error";
-// import useOnClickOutside from "@/hooks/useOnClickOutside";
+import "./index.css";
 import { IAppProps } from "./main";
 
 // const BASEPATH = "https://chatty-liart.vercel.app/api";
@@ -41,6 +40,13 @@ const Widget = (props: IAppProps) => {
 
   const BackgroundStyles = {
     backgroundColor: props.theme_color || chatbotDetails?.colorScheme,
+  };
+
+  const widgetStyles = {
+    "--text-color":
+      props.text_color || getContrast(chatbotDetails?.colorScheme || ""),
+    "--theme-color":
+      props.theme_color || chatbotDetails?.colorScheme || "orange",
   };
 
   // const scrollTriggerRef = useRef<>(null);
@@ -90,7 +96,6 @@ const Widget = (props: IAppProps) => {
     fetchBot();
   }, []);
 
-
   // useOnClickOutside(widgetContainerRef, () => {
   //   setChatBox(false);
   // });
@@ -103,7 +108,7 @@ const Widget = (props: IAppProps) => {
       setChatBox(!chatBox);
       if (threadId) {
         setThreadId(threadId);
-      
+
         setThreadLoading(false);
         return;
       }
@@ -123,7 +128,7 @@ const Widget = (props: IAppProps) => {
       }
       const thread: string = data.thread;
       setThreadId(thread);
-     
+
       setMessages((prev) => [
         ...prev,
         {
@@ -184,12 +189,14 @@ const Widget = (props: IAppProps) => {
   }, [messages]);
 
   return (
-    <div className="fixed bottom-5 right-5 p-3 z-[150]">
+    <div
+      style={widgetStyles as React.CSSProperties} // By default variables are not a valid typescript type for css properties
+      className="fixed bottom-5 right-5 p-3 z-[150]"
+    >
       {/* The widget at the bottom right which starts a new thread onClick */}
       <Button
         onClick={() => createThread()}
-        style={BackgroundStyles}
-        className="p-7 justify-center flex items-center rounded-full hover:bg-orange-500/70"
+        className="p-7 justify-center bg-bg hover:bg-bg hover:opacity-70 text-text flex items-center rounded-full "
       >
         {chatBox ? (
           <IoClose className="w-8 h-8 text-white cursor-pointer" />
@@ -206,8 +213,7 @@ const Widget = (props: IAppProps) => {
         >
           {/* Start of orange header for chatbox */}
           <div
-            style={{ ...BackgroundStyles, color: chatbotDetails?.textColor }}
-            className="justify-between p-3 flex items-center rounded-t-2xl rounded-b-none "
+            className="justify-between p-3 flex items-center bg-bg text-text rounded-t-2xl rounded-b-none "
           >
             <div className="flex gap-3 items-center">
               <LuDot className="text-green-500" size={40} />
@@ -234,8 +240,8 @@ const Widget = (props: IAppProps) => {
           ) : null}
           {/* Parent element for the chat area below orange header */}
           <ScrollArea
-            className="h-full w-full space-y-2 text-sm"
-            style={{ color: chatbotDetails?.textColor }}
+            className="h-full w-full space-y-2 text-sm text-text"
+            // style={{ color: chatbotDetails?.textColor }}
           >
             {/* Logo and Name of Business */}
             <div className="flex flex-col w-full items-center mb-6">
@@ -254,7 +260,7 @@ const Widget = (props: IAppProps) => {
               </h2>
               <p className="text-muted-foreground px-10 text-center">
                 We are here to help you with any questions in regards to our
-                company and our services. {chatbotDetails?.textColor}
+                company and our services.
               </p>
             </div>
 
