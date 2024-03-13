@@ -14,6 +14,7 @@ declare global {
   interface Window {
     Chatbot: {
       mount: (el: Element, props: IAppProps) => void;
+      loadCss:(cssUrl:string) => void
     };
   }
 }
@@ -39,6 +40,13 @@ window.Chatbot = {
       );
     }
   },
+  loadCss:function (cssUrl:string) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = cssUrl; 
+    document.head.appendChild(link);
+  }
 };
 
 window.Chatbot.mount(document.getElementById("root")!, {
