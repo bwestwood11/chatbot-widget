@@ -3,6 +3,8 @@ import { AssistantContextProvider } from "./context/assistant-context";
 import App from "./App";
 import { checkProps } from "./lib/utils";
 import ReactDOM from "react-dom/client";
+import { ErrorBoundary } from "react-error-boundary";
+
 
 export interface IAppProps {
   api_key: string;
@@ -32,11 +34,14 @@ window.Chatbot = {
       return;
     } else {
       root.render(
+        <ErrorBoundary onError={(error)=>console.error("CHATBOT_WIDGET: " + error)} fallback={<div></div>}>
         <MessagesContextProvider>
-          <AssistantContextProvider>            
+          <AssistantContextProvider>  
+                  
             <App {...props} />
           </AssistantContextProvider>
         </MessagesContextProvider>
+        </ErrorBoundary>
       );
     }
   },
@@ -50,7 +55,7 @@ window.Chatbot = {
 };
 
 // window.Chatbot.mount(document.getElementById("root")!, {
-//   api_key: "6ad046f2-fce5-48a0-b570-10d0deddb747",
+//   api_key: "a4bc8eb4-185e-4021-b278-bbeac36809ad",
 //   text_color: "#ffffff",
 //   theme_color: "#FF0000",
 // });

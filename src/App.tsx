@@ -12,8 +12,8 @@ import { GoDotFill } from "react-icons/go";
 import "./index.css";
 import { IAppProps } from "./main";
 
-// const BASEPATH = "https://chatty-liart.vercel.app/api";
-const BASEPATH = "http://localhost:3000/api";
+const BASEPATH = "https://chatty-liart.vercel.app/api";
+// const BASEPATH = "http://localhost:3000/api";
 
 type TCHATBOXDETAILS = {
   chatBotName: string;
@@ -73,7 +73,7 @@ const Widget = (props: IAppProps) => {
 
   useEffect(() => {
     const fetchBot = async function () {
-      console.log(props);
+    
       const response = await fetch(BASEPATH + `/chatbot/${props.api_key}`);
       if (!response.ok) {
         return;
@@ -82,14 +82,14 @@ const Widget = (props: IAppProps) => {
       if (!data.data) {
         return;
       }
-      console.log(data.data);
+    
       if (!data.data) {
         return;
       }
       const Details = data.data;
-      console.log(Details);
+ 
       const textColor = getContrast(props.theme_color || Details.colorScheme);
-      console.log({ textColor, details: Details.colorScheme });
+ 
       setChatbotDetails({ ...Details, textColor });
     };
 
@@ -116,9 +116,7 @@ const Widget = (props: IAppProps) => {
       const response = await fetch(
         BASEPATH + `/create-thread/${props.api_key}`
       );
-      console.log("response", response);
       const data = await response.json();
-      console.log("data", data);
       if (!response.ok) {
         throw Error("Error While Creating the chat");
       }
@@ -165,9 +163,21 @@ const Widget = (props: IAppProps) => {
         }),
       });
       const data = await response.json();
+      if(!response.ok){
+        console.log("Response not ok")
+        throw new Error("Something Went Wrong")
+      }
+      if(typeof data !== "string"){
+        console.log("Response Has Errors")
+
+        throw new Error(data.error)
+      }
+    
       setMessages((prev) => [...prev, { from: "chatbot", message: data }]);
-    } catch {
-      setMessages((prev) => [
+    } catch(error) {
+
+      console.log({error})  
+          setMessages((prev) => [
         ...prev,
         {
           from: "chatbot",
@@ -239,10 +249,12 @@ const Widget = (props: IAppProps) => {
             </div>
           ) : null}
           {/* Parent element for the chat area below orange header */}
-          <ScrollArea
+
+          {!Boolean(error) && <ScrollArea
             className="h-full w-full space-y-2 text-sm text-text"
             // style={{ color: chatbotDetails?.textColor }}
           >
+
             {/* Logo and Name of Business */}
             <div className="flex flex-col w-full items-center mb-6">
               <img
@@ -264,7 +276,7 @@ const Widget = (props: IAppProps) => {
               </p>
             </div>
 
-            {isUserNameExist &&
+            {isUserNameExist  &&
               messages.map((message, index) => (
                 <div
                   key={`LoadingPointsWidget-${index}`}
@@ -302,6 +314,7 @@ const Widget = (props: IAppProps) => {
                 <p className="flex break-words py-1 text-start rounded-lg mb-2 w-1/3 text-slate-500 text-sm">
                   {Array.from({ length: 3 }).map((_, index) => (
                     <GoDotFill
+                    key={`LoadingPointsWidget-${index}`}
                       className={`animate-bounce delay-${index * 100} `}
                       size={18}
                     />
@@ -337,6 +350,7 @@ const Widget = (props: IAppProps) => {
 
             <div ref={messagesEndRef} />
           </ScrollArea>
+      }
 
           {/* The input that allows the user to chat to the assistant's API */}
           {!threadLoading && Boolean(isUserNameExist) && (
