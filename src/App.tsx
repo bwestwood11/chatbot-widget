@@ -12,8 +12,9 @@ import { GoDotFill } from "react-icons/go";
 import "./index.css";
 import { IAppProps } from "./main";
 
-const BASEPATH = "https://chatty-liart.vercel.app/api";
+// const BASEPATH = "https://chatty-liart.vercel.app/api";
 // const BASEPATH = "http://localhost:3000/api";
+const BASEPATH = "https://www.chatbuild.io/api" 
 
 type TCHATBOXDETAILS = {
   chatBotName: string;
@@ -242,12 +243,7 @@ const Widget = (props: IAppProps) => {
               />
             </div>
           </div>
-          {threadLoading && messages.length <= 0 ? <WidgetLoader /> : null}
-          {error ? (
-            <div className=" px-4 py-2">
-              <p>{error}</p>
-            </div>
-          ) : null}
+       
           {/* Parent element for the chat area below orange header */}
 
           {!Boolean(error) && <ScrollArea
@@ -275,7 +271,7 @@ const Widget = (props: IAppProps) => {
                 company and our services.
               </p>
             </div>
-
+            
             {isUserNameExist  &&
               messages.map((message, index) => (
                 <div
@@ -308,6 +304,7 @@ const Widget = (props: IAppProps) => {
                   </div>
                 </div>
               ))}
+             
             {/* The loader for when the Assistant API is thinking of an answer */}
             {generationLoading && (
               <div className="px-4">
@@ -323,7 +320,7 @@ const Widget = (props: IAppProps) => {
               </div>
             )}
             {/* This div is for scrolling to the bottom of the chat box when new messages appear */}
-            {!isUserNameExist && (
+            {!isUserNameExist && !threadLoading && (
               <form
                 onSubmit={(e) => handleUserName(e)}
                 className="flex flex-row bg-white p-4 items-center w-full"
@@ -347,7 +344,12 @@ const Widget = (props: IAppProps) => {
                 </Button>
               </form>
             )}
-
+             {threadLoading && messages.length <= 0 ? <WidgetLoader /> : null}
+          {error ? (
+            <div className=" px-4 py-2">
+              <p>{error}</p>
+            </div>
+          ) : null}
             <div ref={messagesEndRef} />
           </ScrollArea>
       }
