@@ -12,7 +12,6 @@ import { GoDotFill } from "react-icons/go";
 import "./index.css";
 import { IAppProps } from "./main";
 
-// const BASEPATH = "https://chatty-liart.vercel.app/api";
 // const BASEPATH = "http://localhost:3000/api";
 const BASEPATH = "https://www.chatbuild.io/api" 
 
@@ -44,9 +43,9 @@ const Widget = (props: IAppProps) => {
   };
 
   const widgetStyles = {
-    "--text-color":
+    "--chatbot-text-color":
       props.text_color || getContrast(chatbotDetails?.colorScheme || ""),
-    "--theme-color":
+    "--chatbot-theme-color":
       props.theme_color || chatbotDetails?.colorScheme || "orange",
   };
 
@@ -202,7 +201,7 @@ const Widget = (props: IAppProps) => {
   return (
     <div
       style={widgetStyles as React.CSSProperties} // By default variables are not a valid typescript type for css properties
-      className="fixed bottom-5 right-5 p-3 z-[150]"
+      className="fixed bottom-5 right-5 p-3 z-[150] chatbot-widget"
     >
       {/* The widget at the bottom right which starts a new thread onClick */}
       <Button

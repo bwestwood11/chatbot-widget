@@ -17,61 +17,47 @@ const config = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "hsl(var(--chatbot-border))",
+        input: "hsl(var(--chatbot-input))",
+        ring: "hsl(var(--chatbot-ring))",
+        background: "hsl(var(--chatbot-background))",
+        foreground: "hsl(var(--chatbot-foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "hsl(var(--chatbot-primary))",
+          foreground: "hsl(var(--chatbot-primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "hsl(var(--chatbot-secondary))",
+          foreground: "hsl(var(--chatbot-secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
+          DEFAULT: "hsl(var(--chatbot-destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "hsl(var(--chatbot-muted))",
+          foreground: "hsl(var(--chatbot-muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--chatbot-accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
+          DEFAULT: "hsl(var(--chatbot-popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "hsl(var(--chatbot-card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        bg: "var(--theme-color)",
-        text: "var(--text-color)",
+        bg: "var(--chatbot-theme-color)",
+        text: "var(--chatbot-text-color)",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
+        lg: "var(--chatbot-radius)",
+        md: "calc(var(--chatbot-radius) - 2px)",
+        sm: "calc(var(--chatbot-radius) - 4px)",
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
