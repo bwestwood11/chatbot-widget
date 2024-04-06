@@ -227,7 +227,7 @@ const Widget = (props: IAppProps) => {
           >
             <div className="flex gap-3 items-center">
               <LuDot className="text-green-500" size={40} />
-              <h2 className="text-lg font-bold text-center">
+              <h2 className="text-lg font-bold text-center text-text">
                 {chatbotDetails?.chatBotName || "Chatty Assistant"}
               </h2>
             </div>
