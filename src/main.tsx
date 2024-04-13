@@ -54,11 +54,11 @@ window.Chatbot = {
   }
 };
 
-// window.Chatbot.mount(document.getElementById("root")!, {
-//   api_key: "84e23d5b-1257-40d4-a811-22f12bf26f7d",
-//   text_color: "#ffffff",
-//   theme_color: "#FF0000",
-// });
+window.Chatbot.mount(document.getElementById("root")!, {
+  api_key: "8c46d57c-759a-4ddb-9d4a-5025caf2b2c6",
+  text_color: "#ffffff",
+  theme_color: "#FF0000",
+});
 
 function ErrorComponent({ message }: { message?: string }) {
   return (
