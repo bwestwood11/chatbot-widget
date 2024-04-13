@@ -12,8 +12,8 @@ import { GoDotFill } from "react-icons/go";
 import "./index.css";
 import { IAppProps } from "./main";
 
-const BASEPATH = "http://localhost:3000/api";
-// const BASEPATH = "https://www.chatbuild.io/api";
+// const BASEPATH = "http://localhost:3000/api";
+const BASEPATH = "https://www.chatbuild.io/api";
 
 type TCHATBOXDETAILS = {
   chatBotName: string;
