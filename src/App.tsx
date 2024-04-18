@@ -19,6 +19,7 @@ type TCHATBOXDETAILS = {
   chatBotName: string;
   colorScheme: string;
   welcomeMessage: string;
+  chatBotDescription: string;
   apiKey: string;
   logoUrl: string;
   textColor: string;
@@ -79,21 +80,19 @@ const Widget = (props: IAppProps) => {
           apiKey: props.api_key,
         }),
       });
-      if(!response.ok){
-        throw Error("Bad Response From Backend")
+      if (!response.ok) {
+        throw Error("Bad Response From Backend");
       }
 
-      const data = await response.json()
-      if ((!("threadId" in data))) {
-        throw Error("No Thread Id From Backend")
+      const data = await response.json();
+      if (!("threadId" in data)) {
+        throw Error("No Thread Id From Backend");
       }
       setThreadId(data.threadId);
       setThreadLoading(false);
-
     } catch (error) {
-      console.error(error)
+      console.error(error);
       setError("Something Went Wrong");
-
     }
   };
 
@@ -175,13 +174,12 @@ const Widget = (props: IAppProps) => {
 
   return (
     <div
-
       style={widgetStyles as React.CSSProperties} // By default variables are not a valid typescript type for css properties
       className="fixed bottom-5 right-5 p-3 z-[150] chatbot-widget"
     >
       {/* The widget at the bottom right which starts a new thread onClick */}
       <Button
-       onClick={()=> setChatBox(!chatBox)}
+        onClick={() => setChatBox(!chatBox)}
         className="p-7 justify-center bg-bg hover:bg-bg hover:opacity-70 text-text flex items-center rounded-full "
       >
         {chatBox ? (
@@ -240,8 +238,7 @@ const Widget = (props: IAppProps) => {
                   {chatbotDetails?.chatBotName}
                 </h2>
                 <p className="text-muted-foreground px-10 text-center">
-                  We are here to help you with any questions in regards to our
-                  company and our services.
+                  {chatbotDetails?.chatBotDescription || "The Basic Chatbot Description"}
                 </p>
               </div>
 
@@ -250,12 +247,26 @@ const Widget = (props: IAppProps) => {
                   <div
                     key={`LoadingPointsWidget-${index}`}
                     className={cn(
-                      "flex flex-1 px-4",
+                      "flex flex-1 px-4 gap-2",
                       message?.from === "user"
                         ? "justify-end w-full"
                         : "justify-start w-full"
                     )}
                   >
+                    {message?.from === "chatbot" ? (
+                      <img
+                        src={
+                          chatbotDetails?.logoUrl ||
+                          "https://via.placeholder.com/50"
+                        }
+                        alt="logo"
+                        width={12}
+                        height={12}
+                        loading="lazy"
+                        className="size-4 rounded-full object-contain mt-3"
+                      />
+                    ) : null}
+                    
                     <div
                       className={cn(
                         "flex gap-y-1",
@@ -308,10 +319,7 @@ const Widget = (props: IAppProps) => {
                     value={userNameInput}
                     {...props}
                   />
-                  <Button
-                    type="submit"
-                    className="border-s-0"
-                  >
+                  <Button type="submit" className="border-s-0">
                     <LuArrowUpRight size={20} />
                   </Button>
                 </form>
@@ -327,21 +335,22 @@ const Widget = (props: IAppProps) => {
           )}
 
           {/* The input that allows the user to chat to the assistant's API */}
-          {!threadLoading && Boolean(isUserNameExist) && (
+          {(
             <form
               onSubmit={(e) => handleUserMessage(e)}
               className="flex flex-row bg-white p-4 items-center"
             >
               <input
                 type={"text"}
-                placeholder="Message..."
+                placeholder={Boolean(isUserNameExist) ? "Enter Message..." :"Enter The Name First"}
                 aria-label="Type here"
                 value={userMessage}
+                disabled={!Boolean(isUserNameExist) || threadLoading}
                 onChange={(e) => setUserMessage(e.target.value)}
                 className=" h-9 rounded-md border border-input bg-transparent py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
                 {...props}
               />
-              <Button type="submit" className="border-s-0" disabled={!threadId}>
+              <Button type="submit" className="border-s-0" disabled={!threadId || !Boolean(isUserNameExist)}>
                 <LuArrowUpRight size={20} />
               </Button>
             </form>
