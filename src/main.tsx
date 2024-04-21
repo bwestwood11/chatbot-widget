@@ -1,9 +1,11 @@
 import { MessagesContextProvider } from "./context/messages-context";
 import { AssistantContextProvider } from "./context/assistant-context";
-import App from "./App";
+// import App from "./App";
 import { checkProps } from "./lib/utils";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
+import Chatbot from "@/components/ChatWidget/chatbot"
+import "./index.css"
 
 
 export interface IAppProps {
@@ -21,7 +23,9 @@ declare global {
   }
 }
 
+
 window.Chatbot = {
+
   mount: function (el: Element, props: IAppProps) {
     let root: ReactDOM.Root | null = null;
 
@@ -37,8 +41,8 @@ window.Chatbot = {
         <ErrorBoundary onError={(error)=>console.error("CHATBOT_WIDGET: " + error)} fallback={<div></div>}>
         <MessagesContextProvider>
           <AssistantContextProvider>  
-                  
-            <App {...props} />
+            <Chatbot apiKey={props.api_key} textColor={props.text_color} themeColor={props.theme_color} />
+            {/* <App {...props} /> */}
           </AssistantContextProvider>
         </MessagesContextProvider>
         </ErrorBoundary>
@@ -55,9 +59,7 @@ window.Chatbot = {
 };
 
 // window.Chatbot.mount(document.getElementById("root")!, {
-//   api_key: "8c46d57c-759a-4ddb-9d4a-5025caf2b2c6",
-//   text_color: "#ffffff",
-//   theme_color: "#FF0000",
+//   api_key: "8c46d57c-759a-4ddb-9d4a-5025caf2b2c6"
 // });
 
 function ErrorComponent({ message }: { message?: string }) {
