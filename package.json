@@ -1,8 +1,20 @@
 {
-  "name": "chatbot-widget",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@chatbuild/cdn",
+  "private": false,
+  "version": "0.0.2",
   "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "chat",
+    "widget",
+    "react",
+    "integration",
+    "chatbuild",
+    "Chatbuild.ai"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
