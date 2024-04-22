@@ -4,9 +4,8 @@ import { AssistantContextProvider } from "./context/assistant-context";
 import { checkProps } from "./lib/utils";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
-import Chatbot from "@/components/ChatWidget/chatbot"
-import "./index.css"
-
+import Chatbot from "@/components/ChatWidget/chatbot";
+import "./index.css";
 
 export interface IAppProps {
   api_key: string;
@@ -18,14 +17,12 @@ declare global {
   interface Window {
     Chatbot: {
       mount: (el: Element, props: IAppProps) => void;
-      loadCss:(cssUrl:string) => void
+      loadCss: (cssUrl: string) => void;
     };
   }
 }
 
-
 window.Chatbot = {
-
   mount: function (el: Element, props: IAppProps) {
     let root: ReactDOM.Root | null = null;
 
@@ -38,29 +35,38 @@ window.Chatbot = {
       return;
     } else {
       root.render(
-        <ErrorBoundary onError={(error)=>console.error("CHATBOT_WIDGET: " + error)} fallback={<div></div>}>
-        <MessagesContextProvider>
-          <AssistantContextProvider>  
-            <Chatbot apiKey={props.api_key} textColor={props.text_color} themeColor={props.theme_color} />
-            {/* <App {...props} /> */}
-          </AssistantContextProvider>
-        </MessagesContextProvider>
+        <ErrorBoundary
+          onError={(error) => console.error("CHATBOT_WIDGET: " + error)}
+          fallback={<div></div>}
+        >
+          <MessagesContextProvider>
+            <AssistantContextProvider>
+              <Chatbot
+                apiKey={props.api_key}
+                textColor={props.text_color}
+                themeColor={props.theme_color}
+              />
+              {/* <App {...props} /> */}
+            </AssistantContextProvider>
+          </MessagesContextProvider>
         </ErrorBoundary>
       );
     }
   },
-  loadCss:function (cssUrl:string) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = cssUrl; 
+  loadCss: function (cssUrl: string) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = cssUrl;
     document.head.appendChild(link);
-  }
+  },
 };
 
-// window.Chatbot.mount(document.getElementById("root")!, {
-//   api_key: "8c46d57c-759a-4ddb-9d4a-5025caf2b2c6"
-// });
+if (import.meta.env.DEV) {
+  window.Chatbot.mount(document.getElementById("root")!, {
+    api_key: import.meta.env.VITE_DEMO_ENV_KEY,
+  });
+}
 
 function ErrorComponent({ message }: { message?: string }) {
   return (
