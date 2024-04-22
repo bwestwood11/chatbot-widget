@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: "esnext",
-    outDir: path.resolve(__dirname, "build"),
+    outDir: path.resolve(__dirname, "dist"),
     rollupOptions: {
       output: {
         entryFileNames: "index.js",
