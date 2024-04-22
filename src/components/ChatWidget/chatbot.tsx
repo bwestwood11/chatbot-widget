@@ -15,6 +15,7 @@ const Chatbot = (props: WidgetProps) => {
 
   useEffect(() => {
     const fetchBot = async function () {
+      console.log(BASE_PATH + "/chatbot");
       const response = await fetch(BASE_PATH + `/chatbot/${props.apiKey}`);
       if (!response.ok) {
         console.error(
@@ -46,8 +47,6 @@ const Chatbot = (props: WidgetProps) => {
     };
   }, [chatbotDetails]);
 
-
-
   const handleChatBoxClose = () => {
     setIsChatbotOpen(false);
   };
@@ -64,7 +63,7 @@ const Chatbot = (props: WidgetProps) => {
       <Button
         onClick={() => setIsChatbotOpen(!isChatbotOpen)}
         className={cn(
-          "chatbot-widget__button w-20 h-14 p-0 justify-center bg-chatbot_primary hover:opacity-80 text-chatbot_primary-foreground flex items-center rounded-full",
+          "chatbot-widget__button w-20 h-14 p-0 justify-center bg-chatbot_primary hover:opacity-80 text-chatbot_primary-foreground flex items-center rounded-full"
         )}
       >
         {isChatbotOpen ? (
