@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { IoClose } from "react-icons/io5";
-import { FaRocketchat } from "react-icons/fa";
 import { TChatBoxDetails, WidgetProps } from "./types";
 import { cn, getContrast } from "@/lib/utils";
 import Widget from "./widget";

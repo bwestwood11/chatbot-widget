@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { IoClose } from "react-icons/io5";
 
 const WelcomeBox = ({
