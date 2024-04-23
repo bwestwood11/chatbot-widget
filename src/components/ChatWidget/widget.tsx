@@ -9,14 +9,30 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Messages from "./messages";
 import { Button } from "@/components/ui/button";
 import MessageForm from "./message-form";
-
+import { useSuggestions } from "@/hooks/use-suggestion-context";
+const randomQuestions = [
+  "What is your Favorite color?",
+  "Siblings?",
+  "Last vacation?",
+  "Dream job?",
+  "Pet's name?",
+  "Favorite sport?",
+  "Favorite hobby?",
+  "Favorite animal?",
+];
 type WidgetProps = {
   chatbotDetails: TChatBoxDetails;
   handleChatBoxClose: () => void;
+  resetChat: () => void;
 };
-const Widget = ({ chatbotDetails, handleChatBoxClose }: WidgetProps) => {
+const Widget = ({
+  chatbotDetails,
+  handleChatBoxClose,
+  resetChat,
+}: WidgetProps) => {
   const { setMessages, messages, generationLoading } = useMessages();
   const { fetchThread, threadError, threadId, threadLoading } = useThread();
+  const { setSuggestion } = useSuggestions();
   const [userNameInput, setUserNameInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for the element to scroll to
 
@@ -31,21 +47,24 @@ const Widget = ({ chatbotDetails, handleChatBoxClose }: WidgetProps) => {
             chatbotDetails?.welcomeMessage || "Hello! How can I help you?",
         },
       ]);
+
       fetchThread(userNameInput, chatbotDetails.apiKey);
+      setSuggestion(randomQuestions);
     }
   };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, generationLoading]);
 
   return (
-    <div className="chatbot-widget__body bg-chatbot_background absolute mb-4 break-words flex flex-col bottom-full justify-between shadow-lg right-0 rounded-2xl w-96 h-[60dvh]">
+    <div className="chatbot-widget__body bg-chatbot_background    sm:mb-4 break-words flex flex-col  justify-between shadow-lg right-0 rounded-2xl fixed  sm:absolute sm:bottom-full bottom-0    w-screen h-screen sm:w-96 sm:h-[min(80dvh,550px)] pb-2">
       {/* Header Of The Chatbot Widget */}
-      <div className="chatbot-widget__header justify-between p-3 flex items-center bg-chatbot_primary text-chatbot_primary-foreground rounded-t-2xl rounded-b-none ">
+      <div className="chatbot-widget__header justify-between p-3 flex items-center bg-chatbot_primary text-chatbot_primary-foreground sm:rounded-t-2xl rounded-b-none ">
         <div className="flex gap-3 items-center">
           <LuDot className="text-green-500" size={40} />
           <h2 className="chatbot-widget__header-heading text-lg font-bold text-center text-chatbot_primary-foreground">
@@ -53,13 +72,13 @@ const Widget = ({ chatbotDetails, handleChatBoxClose }: WidgetProps) => {
           </h2>
         </div>
         <div className="flex space-x-3">
-          <FaMinus
-            onClick={() => handleChatBoxClose()}
+          <IoClose
+            onClick={() => resetChat()}
             role="button"
             aria-label="Close Chatbot Widget"
             className="hover:opacity-60"
           />
-          <IoClose
+          <FaMinus
             onClick={() => handleChatBoxClose()}
             role="button"
             aria-label="Close Chatbot Widget"
@@ -96,40 +115,46 @@ const Widget = ({ chatbotDetails, handleChatBoxClose }: WidgetProps) => {
           {!threadId && (
             <form
               onSubmit={handleUserNameFormSubmit}
-              className="flex flex-row  p-4 items-center w-full chatbot-widget__username"
+              className=" chatbot-widget__username p-4 space-y-2 "
             >
-              <label className="sr-only">Enter Your Name</label>
-              <input
-                type={"text"}
-                placeholder="Enter Your Name To Continue"
-                aria-label="Type here"
-                className="chatbot-widget__username-input h-9 rounded-md border border-input bg-transparent text-chatbot_foreground py-1  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
-                onChange={(e) => setUserNameInput(e.target.value)}
-                value={userNameInput}
-              />
-              <Button
-                type="submit"
-                aria-label="Enter Your Name"
-                className="border-s-0 chatbot-widget__username-submit"
-              >
-                {threadLoading ? (
-                  <LuLoader size={20} className=" animate-spin" />
-                ) : (
-                  <LuArrowUpRight size={20} />
-                )}
-              </Button>
+              <label className="text-chatbot_foreground font-semibold px-1">
+                Enter Your Name
+              </label>
+              <div className="flex flex-row   items-center w-full gap-3">
+                <input
+                  type={"text"}
+                  placeholder="👋 Let's be friends, okay?"
+                  aria-label="Type here"
+                  className="chatbot-widget__username-input  h-9 rounded-md border border-input bg-transparent text-chatbot_foreground  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
+                  onChange={(e) => setUserNameInput(e.target.value)}
+                  value={userNameInput}
+                />
+                <Button
+                  type="submit"
+                  aria-label="Enter Your Name"
+                  className="border-s-0 h-9 chatbot-widget__username-submit"
+                >
+                  {threadLoading ? (
+                    <LuLoader size={20} className=" animate-spin" />
+                  ) : (
+                    <LuArrowUpRight size={20} />
+                  )}
+                </Button>
+              </div>
             </form>
           )}
-          {Boolean(threadId) && !threadLoading ? <Messages logoUrl={chatbotDetails.logoUrl} /> : null}
+
+          {Boolean(threadId) && !threadLoading ? (
+            <Messages logoUrl={chatbotDetails.logoUrl} />
+          ) : null}
           <div ref={messagesEndRef}></div>
         </ScrollArea>
       )}
-      <div>
-        <MessageForm
-          scrollToBottom={scrollToBottom}
-          apiKey={chatbotDetails.apiKey}
-        />
-      </div>
+
+      <MessageForm
+        scrollToBottom={scrollToBottom}
+        apiKey={chatbotDetails.apiKey}
+      />
     </div>
   );
 };

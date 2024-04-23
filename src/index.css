@@ -63,8 +63,8 @@
     --chatbot-destructive: 0 84.2% 60.2%;
     --chatbot-destructive-foreground: 210 40% 98%;
 
-    --chatbot-message-bg:210 40% 98%;
-    --chatbot-message-text:222.2 84% 4.9%;
+    --chatbot-message-bg: 210 40% 98%;
+    --chatbot-message-text: 222.2 84% 4.9%;
 
     --chatbot-border: 214.3 31.8% 91.4%;
     --chatbot-input: 214.3 31.8% 91.4%;
@@ -74,3 +74,28 @@
   }
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  scrollbar-color: hsl(var(--chatbot-primary)) hsl(var(--chatbot-background));
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar::-webkit-scrollbar-track {
+  display: none;
+}
+
+.chatbot_suggestion_container::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  height: 100%;
+  top: 0;
+  width: 30px;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 0) 0%,
+    hsl(var(--chatbot-background) / 0.9)
+  );
+}

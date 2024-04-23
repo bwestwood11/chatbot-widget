@@ -1,11 +1,16 @@
 import { createContext, useState } from "react";
 import { BASE_PATH } from "../lib/constants";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type TAssistantContext = {
   threadId: string;
   threadError: string;
-  threadLoading:boolean;
-  fetchThread: (userName:string, apiKey:string) => Promise<string | undefined>
+  threadLoading: boolean;
+  resetThread: () => void;
+  fetchThread: (
+    userName: string,
+    apiKey: string
+  ) => Promise<string | undefined>;
 };
 
 export const AssistantContext = createContext<TAssistantContext | null>(null);
@@ -15,11 +20,12 @@ export function AssistantContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [threadId, setThreadId] = useState("");
+  const [threadId, setThreadId] = useLocalStorage("threadId", "");
+  // const [threadId, setThreadId] = useState("");
   const [threadError, setThreadError] = useState("");
   const [threadLoading, setThreadLoading] = useState(false);
 
-  const fetchThread = async (userName: string, apiKey:string) => {
+  const fetchThread = async (userName: string, apiKey: string) => {
     if (!userName.trim()) {
       return;
     }
@@ -50,13 +56,17 @@ export function AssistantContextProvider({
       }
       setThreadId(data.threadId);
       setThreadLoading(false);
-      return data.threadId as string
+      return data.threadId as string;
     } catch (error) {
       console.error("[CHATBUILD_AI] ", error);
       setThreadError("[CHATBUILD_AI] Something Unexpected Happen");
       setThreadLoading(false);
       return;
     }
+  };
+
+  const resetThread = () => {
+    setThreadId("");
   };
 
   console.log("Thread Id", threadId);
@@ -66,7 +76,8 @@ export function AssistantContextProvider({
         threadId,
         threadError,
         fetchThread,
-        threadLoading
+        threadLoading,
+        resetThread,
       }}
     >
       {children}
