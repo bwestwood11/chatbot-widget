@@ -10,16 +10,7 @@ import Messages from "./messages";
 import { Button } from "@/components/ui/button";
 import MessageForm from "./message-form";
 import { useSuggestions } from "@/hooks/use-suggestion-context";
-const randomQuestions = [
-  "What is your Favorite color?",
-  "Siblings?",
-  "Last vacation?",
-  "Dream job?",
-  "Pet's name?",
-  "Favorite sport?",
-  "Favorite hobby?",
-  "Favorite animal?",
-];
+
 type WidgetProps = {
   chatbotDetails: TChatBoxDetails;
   handleChatBoxClose: () => void;
@@ -49,7 +40,7 @@ const Widget = ({
       ]);
 
       fetchThread(userNameInput, chatbotDetails.apiKey);
-      setSuggestion(randomQuestions);
+      setSuggestion(chatbotDetails.suggestionQuestions);
     }
   };
 

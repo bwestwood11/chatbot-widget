@@ -7,10 +7,39 @@ import { Button } from "../ui/button";
 import { LuArrowUpRight } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
+import { BASE_PATH } from "@/lib/constants";
+import { useThread } from "@/hooks/use-thread";
 
 const Messages = ({ logoUrl }: { logoUrl: string }) => {
   const { messages, generationLoading } = useMessages();
   const [showEmailCapture, setShowEmailCapture] = useState(true);
+  const [email, setEmail] = useState("");
+  const { threadId } = useThread();
+
+  const captureEmail = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+
+    try {
+      const response = await fetch(BASE_PATH + "/capture-email", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email,
+          threadId: threadId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Something Went Wrong");
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setEmail("");
+      setShowEmailCapture(false);
+    }
+  };
+
   return (
     <div className="pb-5">
       {messages.map((message, index) => (
@@ -19,7 +48,10 @@ const Messages = ({ logoUrl }: { logoUrl: string }) => {
 
       {showEmailCapture && messages.length === 3 && (
         <div className="px-4 mt-4 ">
-          <form className=" chatbot-widget__username p-4 relative rounded-lg space-y-2 bg-chatbot_secondary ">
+          <form
+            onSubmit={captureEmail}
+            className=" chatbot-widget__username p-4 relative rounded-lg space-y-2 bg-chatbot_secondary "
+          >
             <button
               type="button"
               className="text-chatbot_secondary-foreground absolute right-2 top-2"
@@ -33,12 +65,12 @@ const Messages = ({ logoUrl }: { logoUrl: string }) => {
             </label>
             <div className="flex flex-row   items-center w-full gap-3">
               <input
-                type={"text"}
+                type="email"
                 placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 aria-label="Type here"
                 className="chatbot-widget__username-input  h-9 rounded-md border border-input bg-chatbot_background text-chatbot_foreground  shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-chatbot_foreground/60 focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-end items-end focus-visible:ring-transparent focus:ring-0 focus px-4 rounded-r-none text-sm"
-                // onChange={(e) => setUserNameInput(e.target.value)}
-                // value={userNameInput}
               />
               <Button
                 type="submit"

@@ -1,5 +1,3 @@
-import { LuArrowUpRight } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useThread } from "@/hooks/use-thread";
 import { useMessages } from "@/hooks/use-messages";
@@ -66,7 +64,7 @@ const MessageForm = ({ apiKey, scrollToBottom }: MessageFormProps) => {
   return (
     <div className=" px-4 space-y-3   chatbot-widget__message-form">
       <div className="chatbot_suggestion_container relative">
-        <div className="px-1 flex gap-3 w-full  overflow-x-auto  no-scrollbar   ">
+        <div className="py-1 flex gap-3 w-full overflow-x-auto chatbot_scrollbar  ">
           {suggestion.map((item, index) => (
             <SuggestionButton
               key={index}
@@ -88,7 +86,7 @@ const MessageForm = ({ apiKey, scrollToBottom }: MessageFormProps) => {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-row  items-center h-11 text-chatbot_foreground focus-within:ring-1 focus-within:ring-chatbot_primary rounded-md border border-input bg-transparent shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full  justify-end focus-visible:ring-transparent focus:ring-0 focus px-4  text-sm"
+        className="flex flex-row items-center h-11 text-chatbot_foreground focus-within:ring-1 focus-within:ring-chatbot_primary rounded-md border border-input bg-transparent shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1  disabled:cursor-not-allowed disabled:opacity-50 w-full  justify-end focus-visible:ring-transparent focus:ring-0 focus px-4  text-sm"
       >
         <input
           type={"text"}
