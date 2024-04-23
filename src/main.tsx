@@ -6,6 +6,7 @@ import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import Chatbot from "@/components/ChatWidget/chatbot";
 import "./index.css";
+import { SuggestionContextProvider } from "./context/suggestion-context";
 
 export interface IAppProps {
   api_key: string;
@@ -41,11 +42,13 @@ window.Chatbot = {
         >
           <MessagesContextProvider>
             <AssistantContextProvider>
-              <Chatbot
-                apiKey={props.api_key}
-                textColor={props.text_color}
-                themeColor={props.theme_color}
-              />
+              <SuggestionContextProvider>
+                <Chatbot
+                  apiKey={props.api_key}
+                  textColor={props.text_color}
+                  themeColor={props.theme_color}
+                />
+              </SuggestionContextProvider>
               {/* <App {...props} /> */}
             </AssistantContextProvider>
           </MessagesContextProvider>
