@@ -86,6 +86,8 @@
   display: none;
 } */
 
+
+
 .chatbot_suggestion_container::after {
   content: "";
   position: absolute;
@@ -101,9 +103,17 @@
 }
 
 .chatbot_scrollbar {
+  scrollbar-width: none;
+  scrollbar-color: var(--chatbot-theme-color) #f2fdff;
+}
+.chatbot_scrollbar:hover {
+  scrollbar-width: thin;
+  scrollbar-color: var(--chatbot-theme-color) #f2fdff;
+}
+/* .chatbot_scrollbar {
   scrollbar-width: thin;
   scrollbar-color: var(--chatbot-theme-color) #F2FDFF;
-}
+} */
 
 .chatbot_scrollbar::-webkit-scrollbar {
   height: 4px;

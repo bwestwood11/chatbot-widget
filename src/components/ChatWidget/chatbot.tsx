@@ -78,6 +78,8 @@ const Chatbot = (props: WidgetProps) => {
         <WelcomeBox
           setIsChatbotOpen={setIsChatbotOpen}
           setIsWelcomeBoxOpen={setIsWelcomeBoxOpen}
+          alertMessage={chatbotDetails?.alertMessage}
+          chatbotName= {chatbotDetails?.chatBotName}
         />
       ) : null}
 

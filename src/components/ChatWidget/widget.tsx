@@ -1,6 +1,5 @@
 import { LuArrowUpRight, LuDot, LuLoader } from "react-icons/lu";
 import { TChatBoxDetails } from "./types";
-import { FaMinus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useMessages } from "@/hooks/use-messages";
 import { useThread } from "@/hooks/use-thread";
@@ -10,6 +9,7 @@ import Messages from "./messages";
 import { Button } from "@/components/ui/button";
 import MessageForm from "./message-form";
 import { useSuggestions } from "@/hooks/use-suggestion-context";
+import { PiArrowsCounterClockwiseBold } from "react-icons/pi";
 
 type WidgetProps = {
   chatbotDetails: TChatBoxDetails;
@@ -62,18 +62,18 @@ const Widget = ({
             {chatbotDetails.chatBotName || "Chatty Assistant"}
           </h2>
         </div>
-        <div className="flex space-x-3">
-          <IoClose
+        <div className="flex space-x-3 items-center">
+          <PiArrowsCounterClockwiseBold
             onClick={() => resetChat()}
             role="button"
             aria-label="Close Chatbot Widget"
-            className="hover:opacity-60"
+            className="hover:opacity-60 size-6"
           />
-          <FaMinus
+          <IoClose
             onClick={() => handleChatBoxClose()}
             role="button"
             aria-label="Close Chatbot Widget"
-            className="hover:opacity-60"
+            className="hover:opacity-60 size-6"
           />
         </div>
       </div>

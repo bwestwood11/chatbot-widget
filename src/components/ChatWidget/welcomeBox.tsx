@@ -4,10 +4,17 @@ import { IoClose } from "react-icons/io5";
 const WelcomeBox = ({
   setIsWelcomeBoxOpen,
   setIsChatbotOpen,
+  alertMessage,
+  chatbotName
 }: {
   setIsWelcomeBoxOpen: Dispatch<SetStateAction<boolean>>;
   setIsChatbotOpen: Dispatch<SetStateAction<boolean>>;
+  alertMessage?: string;
+  chatbotName: string;
 }) => {
+  if (!alertMessage?.trim()) {
+    return null
+  }
   return (
     <div
       role="button"
@@ -28,11 +35,10 @@ const WelcomeBox = ({
         className="space-y-1"
       >
         <p className="text-chatbot_foreground/40 font-semibold flex-1">
-          Brett From ChatBuild
+          Hello from {chatbotName}!
         </p>
         <p>
-          Hey there! I'm Brett, your personal chatbot. I'm here to help you with
-          your needs.
+          {alertMessage}
         </p>
       </div>
     </div>

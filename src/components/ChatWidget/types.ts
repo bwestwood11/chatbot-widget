@@ -14,4 +14,5 @@ export type TChatBoxDetails = {
   logoUrl: string;
   textColor: string;
   suggestionQuestions: string[];  
+  alertMessage: string;
 };
